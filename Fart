@@ -808,7 +808,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
             if os.clock() - touchStartTime < 0.3 then
                 spawn(function()
                     for _ = 1, 10 do -- تعداد ضربات در هر لمس
-                        game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+                        game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
                         task.wait(0.01) -- فاصله بین ضربات
                     end
                 end)
