@@ -773,10 +773,18 @@ local MAX_PUNCHES = 50
 
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 200, 0, 50)
-toggleButton.Position = UDim2.new(0.5, -100, 0.9, -25)
+toggleButton.Position = UDim2.new(0.5, -100, 0.8, -25)
 toggleButton.Text = "ðŸ”¥ Ultra Rapid Punch: OFF"
 toggleButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-toggleButton.Visible = false 
+toggleButton.Visible = false
+
+local inGameButton = Instance.new("TextButton")
+inGameButton.Size = UDim2.new(0, 150, 0, 40)
+inGameButton.Position = UDim2.new(0.85, -75, 0.6, -20)
+inGameButton.Text = "Toggle Ultra Punch"
+inGameButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+inGameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+inGameButton.Visible = false
 
 local function UltraPunch()
     for _ = 1, MAX_PUNCHES do
@@ -791,11 +799,18 @@ toggleButton.MouseButton1Click:Connect(function()
     toggleButton.BackgroundColor3 = _G.UltraPunchEnabled and Color3.fromRGB(50, 255, 50) or Color3.fromRGB(255, 50, 50)
 end)
 
+inGameButton.MouseButton1Click:Connect(function()
+    _G.UltraPunchEnabled = not _G.UltraPunchEnabled
+    inGameButton.Text = _G.UltraPunchEnabled and "Ultra Punch: ON" or "Ultra Punch: OFF"
+end)
+
 SSection:NewToggle("ULTRA RAPID PUNCH", "", function(state)
     toggleButton.Visible = state
+    inGameButton.Visible = state
     if state then
         _G.UltraPunchEnabled = true
         toggleButton.Text = "ðŸ”¥ Ultra Rapid Punch: ON"
+        inGameButton.Text = "Ultra Punch: ON"
         
         game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed or not _G.UltraPunchEnabled then return end
@@ -807,10 +822,12 @@ SSection:NewToggle("ULTRA RAPID PUNCH", "", function(state)
     else
         _G.UltraPunchEnabled = false
         toggleButton.Visible = false
+        inGameButton.Visible = false
     end
 end)
 
 toggleButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+inGameButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 SSection:NewToggle("Spawn Point", "", function(state)
 	if state then
