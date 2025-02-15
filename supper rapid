@@ -1,0 +1,34 @@
+getgenv().superHeavyRapid = true
+
+local function shrp()
+    for i = 1, 100 do
+        game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
+    end
+end
+
+local function connectTool(tool)
+    if tool and tool:IsA("Tool") then
+        tool.Activated:Connect(function()
+            if getgenv().superHeavyRapid == true then
+                shrp()
+            end
+        end)
+    end
+end
+
+local player = game.Players.LocalPlayer
+
+if player.Character then
+    local currentTool = player.Character:FindFirstChildWhichIsA("Tool")
+    if currentTool then
+        connectTool(currentTool)
+    end
+end
+
+player.CharacterAdded:Connect(function(character)
+    character.ChildAdded:Connect(function(child)
+        if child:IsA("Tool") then
+            connectTool(child)
+        end
+    end)
+end)
