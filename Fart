@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("TheFartMan GUI - Age Of Heros", "Ocean");
+local Window = Library.CreateLib("Omni - Man farm", "Ocean");
 local Tab = Window:NewTab("AutoFarm Menu");
 local MainSection = Tab:NewSection("AutoFarm Menu");
 local TargetTab = Window:NewTab("Target Menu");
@@ -1941,11 +1941,11 @@ self:addButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/ebtal/Rapid-punch/refs/heads/main/rapid.lua"))()
     end
 })
-local MainSection = Tab:NewSection("Made By Killo");
-local TargetSection = TargetTab:NewSection("Made By Killo");
-local SSection = STab:NewSection("Made By Killo");
-local StatSection = StatTab:NewSection("Made By Killo");
-local TSection = TTab:NewSection("Made By Killo");
-local MSection = MTab:NewSection("Made By Killo");
-local KSection = KTab:NewSection("Made By Killo");
-local GSection = GTab:NewSection("Made By Killo");
+local MainSection = Tab:NewSection("Made By GodAmir");
+local TargetSection = TargetTab:NewSection("Made By GodAmir");
+local SSection = STab:NewSection("Made By GodAmir");
+local StatSection = StatTab:NewSection("Made By GodAmir");
+local TSection = TTab:NewSection("Made By GodAmir");
+local MSection = MTab:NewSection("Made By GodAmir");
+local KSection = KTab:NewSection("Made By GodAmir");
+local GSection = GTab:NewSection("Made By GodAmir");
