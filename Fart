@@ -788,28 +788,28 @@ SSection:NewToggle("Spawn Point", "", function(state)
 		end);
 	end
 end);
--- تغییر Rapid Punch برای پشتیبانی از موبایل
+-- ????? Rapid Punch ???? ???????? ?? ??????
 SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
     if state then
         getgenv().rapidMobile = true
         local touchStartTime = 0
         
-        -- تشخیص لمس صفحه
+        -- ????? ??? ????
         game:GetService("UserInputService").TouchStarted:Connect(function(touchInput, gameProcessed)
             if gameProcessed then return end
             touchStartTime = os.clock()
         end)
 
-        -- تشخیص پایان لمس
+        -- ????? ????? ???
         game:GetService("UserInputService").TouchEnded:Connect(function(touchInput, gameProcessed)
             if gameProcessed or not rapidMobile then return end
             
-            -- زمان لمس کوتاه (ضربه سریع)
+            -- ???? ??? ????? (???? ????)
             if os.clock() - touchStartTime < 0.3 then
                 spawn(function()
-                    for _ = 1, 10 do -- تعداد ضربات در هر لمس
+                    for _ = 1, 10 do -- ????? ????? ?? ?? ???
                         game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
-                        task.wait(0.01) -- فاصله بین ضربات
+                        task.wait(0.01) -- ????? ??? ?????
                     end
                 end)
             end
@@ -818,36 +818,25 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Rapid Heavy Punch", "", function(state)
-	if state then
-		getgenv().Hrapid = true;
-		local UserInputService = game:GetService("UserInputService");
-		local function onInputEnded(inputObject, gameProcessedEvent)
-			if gameProcessedEvent then
-				return;
-			end
-			if (Hrapid == true) then
-				if (inputObject.UserInputType == Enum.UserInputType.MouseButton1) then
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-					game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1);
-				end
-			end
-		end
-		UserInputService.InputEnded:Connect(onInputEnded);
-	else
-		spawn(function()
-			getgenv().Hrapid = false;
-		end);
-	end
-end);
+SSection:NewToggle("Rapid Heavy Punch (Mobile Compatible)", "", function(state)
+    if state then
+        getgenv().HrapidMobile = true
+        local UserInputService = game:GetService("UserInputService")
+        
+        local function onInputEnded(inputObject, gameProcessedEvent)
+            if gameProcessedEvent then return end
+            if not HrapidMobile then return end
+            
+            if inputObject.UserInputType == Enum.UserInputType.Touch or inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1)
+            end
+        end
+        
+        UserInputService.InputEnded:Connect(onInputEnded)
+    else
+        getgenv().HrapidMobile = false
+    end
+end)
 SSection:NewToggle("Super Rapid Punch", "", function(state)
 	if state then
 		getgenv().superrapid = true;
