@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Rapid Heavy Punch (Mobile Compatible)", "", function(state)
+SSection:NewToggle("Metal glitch punch", "", function(state)
     if state then
         getgenv().HrapidMobile = true
         local UserInputService = game:GetService("UserInputService")
@@ -828,7 +828,7 @@ SSection:NewToggle("Rapid Heavy Punch (Mobile Compatible)", "", function(state)
             if not HrapidMobile then return end
             
             if inputObject.UserInputType == Enum.UserInputType.Touch or inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1)
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.3, 1)
             end
         end
         
