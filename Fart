@@ -831,7 +831,7 @@ SSection:NewToggle("Metal Glitch Punch", "", function(state)
             
             if inputObject.UserInputType == Enum.UserInputType.Touch or inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
                 debounce = true
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.5, 1) -- یک ضربه در هر کلیک یا لمس
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.1, 0.5, 1) -- یک ضربه در هر کلیک یا لمس
                 task.wait(punchCooldown) -- تأخیر هماهنگ با سرعت بازی
                 debounce = false
             end
