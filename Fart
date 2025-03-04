@@ -818,25 +818,30 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Metal glitch punch", "", function(state)
+SSection:NewToggle("Metal Glitch Punch)", "", function(state)
     if state then
         getgenv().HrapidMobile = true
         local UserInputService = game:GetService("UserInputService")
+        local debounce = false -- جلوگیری از ضربات متوالی
         
-        local function onInputEnded(inputObject, gameProcessedEvent)
-            if gameProcessedEvent then return end
+        local function onInputBegan(inputObject, gameProcessedEvent)
+            if gameProcessedEvent or debounce then return end
             if not HrapidMobile then return end
             
             if inputObject.UserInputType == Enum.UserInputType.Touch or inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.5, 1)
+                debounce = true
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.2, 1) -- یک ضربه در هر کلیک یا لمس
+                task.wait(0.3) -- تأخیر برای جلوگیری از ضربات متوالی
+                debounce = false
             end
         end
         
-        UserInputService.InputEnded:Connect(onInputEnded)
+        UserInputService.InputBegan:Connect(onInputBegan)
     else
         getgenv().HrapidMobile = false
     end
 end)
+
 SSection:NewToggle("Super Rapid Punch", "", function(state)
 	if state then
 		getgenv().superrapid = true;
