@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Omni - Man farm", "Ocean");
+local Window = Library.CreateLib("Omni - Man farm", "Dark");
 local Tab = Window:NewTab("AutoFarm Menu");
 local MainSection = Tab:NewSection("AutoFarm Menu");
 local TargetTab = Window:NewTab("Target Menu");
@@ -842,8 +842,6 @@ SSection:NewToggle("Rapid Heavy Punch (Mobile Compatible)", "", function(state)
         getgenv().HrapidMobile = false
     end
 end)
-
-
 
 SSection:NewToggle("Super Rapid Punch", "", function(state)
 	if state then
