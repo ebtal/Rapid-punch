@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Omni - Man farm", "Dark");
+local Window = Library.CreateLib("Omni - Man farm", "Ocean");
 local Tab = Window:NewTab("AutoFarm Menu");
 local MainSection = Tab:NewSection("AutoFarm Menu");
 local TargetTab = Window:NewTab("Target Menu");
