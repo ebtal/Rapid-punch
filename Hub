@@ -1,0 +1,225 @@
+-- تعریف تم‌های دلخواه مشابه Kavo
+local Themes = {
+    Grape = {
+        MainFrameGradientColor1 = Color3.fromRGB(80, 0, 130),
+        MainFrameGradientColor2 = Color3.fromRGB(30, 30, 30),
+        ContentFrameGradientColor1 = Color3.fromRGB(40, 0, 80),
+        ContentFrameGradientColor2 = Color3.fromRGB(20, 20, 20),
+        TabButtonColor = Color3.fromRGB(50, 50, 50),
+        TextColor = Color3.new(1, 1, 1)
+    },
+    Dark = {
+        MainFrameGradientColor1 = Color3.fromRGB(30, 30, 30),
+        MainFrameGradientColor2 = Color3.fromRGB(10, 10, 10),
+        ContentFrameGradientColor1 = Color3.fromRGB(20, 20, 20),
+        ContentFrameGradientColor2 = Color3.fromRGB(0, 0, 0),
+        TabButtonColor = Color3.fromRGB(50, 50, 50),
+        TextColor = Color3.new(1, 1, 1)
+    },
+    Ocean = {
+        MainFrameGradientColor1 = Color3.fromRGB(0, 100, 180),
+        MainFrameGradientColor2 = Color3.fromRGB(0, 50, 90),
+        ContentFrameGradientColor1 = Color3.fromRGB(0, 70, 120),
+        ContentFrameGradientColor2 = Color3.fromRGB(0, 30, 60),
+        TabButtonColor = Color3.fromRGB(60, 60, 60),
+        TextColor = Color3.new(1, 1, 1)
+    },
+    Light = {
+        MainFrameGradientColor1 = Color3.fromRGB(255, 255, 255),
+        MainFrameGradientColor2 = Color3.fromRGB(230, 230, 230),
+        ContentFrameGradientColor1 = Color3.fromRGB(250, 250, 250),
+        ContentFrameGradientColor2 = Color3.fromRGB(240, 240, 240),
+        TabButtonColor = Color3.fromRGB(200, 200, 200),
+        TextColor = Color3.new(0, 0, 0)
+    },
+    Midnight = {
+        MainFrameGradientColor1 = Color3.fromRGB(0, 0, 50),
+        MainFrameGradientColor2 = Color3.fromRGB(0, 0, 30),
+        ContentFrameGradientColor1 = Color3.fromRGB(0, 0, 40),
+        ContentFrameGradientColor2 = Color3.fromRGB(0, 0, 20),
+        TabButtonColor = Color3.fromRGB(40, 40, 40),
+        TextColor = Color3.new(1, 1, 1)
+    }
+}
+
+-- گرفتن سرویس‌های لازم
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+
+-- ساخت ScreenGui اصلی
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CustomHub"
+screenGui.Parent = PlayerGui
+screenGui.ResetOnSpawn = false
+
+-- ساخت Main Frame (قاب اصلی)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 600, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- مقدار اولیه (گرادیان آن پوشش داده می‌شود)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- افزودن UIGradient برای MainFrame
+local gradient = Instance.new("UIGradient", mainFrame)
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Themes.Grape.MainFrameGradientColor1),
+    ColorSequenceKeypoint.new(1, Themes.Grape.MainFrameGradientColor2)
+})
+
+-- افزودن عنوان Hub
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Text = "Custom Hub"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 24
+titleLabel.TextColor3 = Themes.Grape.TextColor
+titleLabel.BackgroundTransparency = 1
+titleLabel.Position = UDim2.new(0, 10, 0, 10)
+titleLabel.Size = UDim2.new(1, -20, 0, 30)
+titleLabel.Parent = mainFrame
+
+-- فریم تب‌ها (قسمت سمت چپ)
+local tabsFrame = Instance.new("Frame")
+tabsFrame.Name = "TabsFrame"
+tabsFrame.Size = UDim2.new(0, 150, 1, -50)
+tabsFrame.Position = UDim2.new(0, 10, 0, 50)
+tabsFrame.BackgroundTransparency = 1
+tabsFrame.Parent = mainFrame
+
+-- فریم محتوای تب (قسمت راست)
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, -170, 1, -50)
+contentFrame.Position = UDim2.new(0, 160, 0, 50)
+contentFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+contentFrame.BorderSizePixel = 0
+contentFrame.Parent = mainFrame
+
+-- افزودن UIGradient برای ContentFrame
+local contentGradient = Instance.new("UIGradient", contentFrame)
+contentGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Themes.Grape.ContentFrameGradientColor1),
+    ColorSequenceKeypoint.new(1, Themes.Grape.ContentFrameGradientColor2)
+})
+
+-- تابع برای پاک کردن محتوای قبلی ContentFrame
+local function clearContent()
+    for _, child in ipairs(contentFrame:GetChildren()) do
+        if child:IsA("GuiObject") then
+            child:Destroy()
+        end
+    end
+end
+
+-- لیست تب‌ها
+local tabs = {"AutoFarm", "Target", "Self", "Stats", "Teleport", "Keybinds", "Scripts"}
+
+-- تابع برای به‌روز کردن محتوای تب انتخاب‌شده
+local function onTabClicked(tabName)
+    clearContent()
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Themes.Grape.TextColor
+    label.TextScaled = true
+    label.Font = Enum.Font.Gotham
+    label.Text = "محتوا برای " .. tabName
+    label.Parent = contentFrame
+end
+
+-- ساخت دکمه‌های تب به‌صورت داینامیک
+for i, tabName in ipairs(tabs) do
+    local tabButton = Instance.new("TextButton")
+    tabButton.Name = tabName.."TabButton"
+    tabButton.Size = UDim2.new(1, 0, 0, 30)
+    tabButton.Position = UDim2.new(0, 0, 0, (i-1)*35)
+    tabButton.BackgroundColor3 = Themes.Grape.TabButtonColor
+    tabButton.BorderSizePixel = 0
+    tabButton.Text = tabName
+    tabButton.TextColor3 = Themes.Grape.TextColor
+    tabButton.Font = Enum.Font.Gotham
+    tabButton.TextSize = 18
+    tabButton.Parent = tabsFrame
+
+    tabButton.MouseButton1Click:Connect(function()
+        onTabClicked(tabName)
+    end)
+end
+
+-- قابلیت درگ کردن MainFrame
+local dragging = false
+local dragInput, dragStart, startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- قابلیت مینیمایز کردن هاب با دکمه Right Shift
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        mainFrame.Visible = not mainFrame.Visible
+    end
+end)
+
+-- تابع برای اعمال تم بر اساس نام
+local function applyTheme(themeName)
+    local theme = Themes[themeName]
+    if not theme then return end
+
+    -- به‌روز کردن گرادیان MainFrame
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, theme.MainFrameGradientColor1),
+        ColorSequenceKeypoint.new(1, theme.MainFrameGradientColor2)
+    })
+
+    -- به‌روز کردن گرادیان ContentFrame
+    contentGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, theme.ContentFrameGradientColor1),
+        ColorSequenceKeypoint.new(1, theme.ContentFrameGradientColor2)
+    })
+
+    -- به‌روز کردن رنگ متن عنوان
+    titleLabel.TextColor3 = theme.TextColor
+
+    -- به‌روز کردن رنگ دکمه‌های تب
+    for _, child in ipairs(tabsFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child.BackgroundColor3 = theme.TabButtonColor
+            child.TextColor3 = theme.TextColor
+        end
+    end
+end
+
+-- اعمال تم پیش‌فرض "Grape"
+applyTheme("Grape")
