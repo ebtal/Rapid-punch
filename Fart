@@ -835,20 +835,20 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             -- اجرای Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
-            -- تأخیر کوتاه بین Heavy Punch و اولین ضربه از دابل پانچ (خیلی سریع اجرا بشه)
-            task.wait(0.1)
+            -- افزایش کمی تأخیر بین Heavy Punch و اولین ضربه از دابل پانچ (طبیعی‌تر به نظر برسه)
+            task.wait(0.15)
 
             -- اجرای اولین ضربه از دابل پانچ (Normal Punch)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            -- کاهش تأخیر بین دو ضربه‌ی دابل پانچ (0.15 تا 0.2 ثانیه)
-            task.wait(math.random(150, 200) / 1000)
+            -- افزایش کمی تأخیر بین دو ضربه‌ی دابل پانچ (0.2 تا 0.25 ثانیه)
+            task.wait(math.random(200, 250) / 1000)
 
             -- اجرای دومین ضربه از دابل پانچ (Normal Punch)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            -- کاهش تأخیر بین هر کلیک (1 تا 1.5 ثانیه برای جلوگیری از بن شدن)
-            task.wait(math.random(1000, 1500) / 1000)
+            -- افزایش کمی تأخیر بین هر کلیک (1.2 تا 1.7 ثانیه برای جلوگیری از بن شدن)
+            task.wait(math.random(1200, 1700) / 1000)
 
             debounce = false
         end
