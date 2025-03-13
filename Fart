@@ -818,28 +818,34 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Rapid Heavy Punch (Mobile Compatible)", "", function(state)
+SSection:NewToggle("Macro", "", function(state)
     if state then
-        getgenv().HrapidMobile = true
+        getgenv().doublePunch = true
         local UserInputService = game:GetService("UserInputService")
-        local debounce = false -- جلوگیری از ضربات متوالی
-        local punchCooldown = 0.5 -- تنظیم سرعت ضربه مطابق بازی
-        
+        local debounce = false
+
         local function onInputBegan(inputObject, gameProcessedEvent)
-            if gameProcessedEvent or debounce then return end
-            if not HrapidMobile then return end
+            if gameProcessedEvent or debounce or not doublePunch then return end
             
-            if inputObject.UserInputType == Enum.UserInputType.Touch or inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+            if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
                 debounce = true
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.5, 2) -- تغییر شناسه ضربه برای تست
-                task.wait(punchCooldown) -- تأخیر هماهنگ با سرعت بازی
+                
+                -- اولین ضربه
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+                
+                -- تاخیر کوتاه بین دو ضربه
+                task.wait(0.1) -- این تاخیر را می‌توانید تنظیم کنید
+                
+                -- دومین ضربه
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+                
                 debounce = false
             end
         end
-        
+
         UserInputService.InputBegan:Connect(onInputBegan)
     else
-        getgenv().HrapidMobile = false
+        getgenv().doublePunch = false
     end
 end)
 
