@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Macro", "", function(state)
+SSection:NewToggle("Double Punch (One Click)", "", function(state)
     if state then
         getgenv().doublePunch = true
         local UserInputService = game:GetService("UserInputService")
@@ -829,13 +829,16 @@ SSection:NewToggle("Macro", "", function(state)
             debounce = true
             
             -- اولین ضربه
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, math.random(8, 12) / 100, 1)
             
-            -- تاخیر کوتاه بین دو ضربه
-            task.wait(0.1)
+            -- تاخیر تصادفی بین دو ضربه (بین 90 تا 130 میلی‌ثانیه)
+            task.wait(math.random(90, 130) / 1000)
             
             -- دومین ضربه
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, math.random(8, 12) / 100, 1)
+            
+            -- تاخیر برای جلوگیری از کلیک بیش از حد سریع (بین 100 تا 150 میلی‌ثانیه)
+            task.wait(math.random(100, 150) / 1000)
             
             debounce = false
         end
