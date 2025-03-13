@@ -818,68 +818,51 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Fuck Mode PvP", "", function(state)
+SSection:NewToggle("Double Punch (One Click)", "", function(state)
     if state then
-        getgenv().heavyPunch = true
+        getgenv().doublePunch = true
         local UserInputService = game:GetService("UserInputService")
         local debounce = false
 
-        local function heavyPunch()
-            if debounce or not getgenv().heavyPunch then return end
+        local function doublePunch()
+            if debounce or not getgenv().doublePunch then return end
             debounce = true
 
-            -- شبیه‌سازی نگه داشتن کلیک برای Heavy Punch
-            local holdTime = 0.75 -- دقیقاً 0.75 ثانیه نگه داشتن
+            -- اولین ضربه
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            task.wait(holdTime)
+            -- تأخیر زیاد بین ضربه اول و دوم (بین 0.5 تا 0.8 ثانیه)
+            task.wait(math.random(500, 800) / 1000)
 
-            -- ارسال Heavy Punch
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
+            -- دومین ضربه
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            -- رفع دیباونس بعد از 0.4 ثانیه (بهینه شده)
-            task.wait(0.4)
+            -- تأخیر طولانی بین هر دابل پانچ (بین 1.5 تا 2.5 ثانیه)
+            task.wait(math.random(1500, 2500) / 1000)
+
             debounce = false
         end
 
-        -- دابل پانچ **با بهترین تأخیر ممکن**
-        local function doubleHeavyPunch()
-            if debounce or not getgenv().heavyPunch then return end
-            debounce = true
-
-            -- اجرای ضربه اول
-            heavyPunch()
-
-            -- تأخیر دقیق بین دابل پانچ (0.1 ثانیه)
-            task.wait(0.1)
-
-            -- اجرای ضربه دوم
-            heavyPunch()
-
-            -- رفع دیباونس برای کلیک بعدی (0.4 ثانیه)
-            task.wait(0.4)
-            debounce = false
-        end
-
-        -- اجرای دابل پانچ با کلیک ماوس و لمس موبایل
+        -- برای ماوس و لمس موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                doubleHeavyPunch()
+                doublePunch()
             end
         end)
 
         local touchConnection = UserInputService.TouchTap:Connect(function()
-            doubleHeavyPunch()
+            doublePunch()
         end)
 
-        -- ذخیره اتصالات برای خاموش کردن
-        getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
+        -- ذخیره اتصالات برای قطع کردن بعداً
+        getgenv().doublePunchConnections = {mouseConnection, touchConnection}
     else
-        getgenv().heavyPunch = false
+        getgenv().doublePunch = false
 
-        -- قطع رویدادها وقتی غیرفعال می‌شه
-        if getgenv().heavyPunchConnections then
-            for _, conn in pairs(getgenv().heavyPunchConnections) do
+        -- قطع کردن رویدادها وقتی غیرفعال می‌شود
+        if getgenv().doublePunchConnections then
+            for _, conn in pairs(getgenv().doublePunchConnections) do
                 conn:Disconnect()
             end
         end
