@@ -824,7 +824,7 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         local UserInputService = game:GetService("UserInputService")
         local debounce = false
 
-        local function heavyPunch()
+        local function doublePunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
@@ -832,31 +832,37 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             local holdTime = 1 -- افزایش زمان نگه داشتن به 1 ثانیه
             task.wait(holdTime)
 
-            -- اجرای اولین ضربه (Heavy Punch)
+            -- اجرای Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
+
+            -- تأخیر کوتاه بین Heavy Punch و اولین ضربه از دابل پانچ (خیلی سریع اجرا بشه)
+            task.wait(0.1)
+
+            -- اجرای اولین ضربه از دابل پانچ (Normal Punch)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
             -- کاهش تأخیر بین دو ضربه‌ی دابل پانچ (0.15 تا 0.2 ثانیه)
             task.wait(math.random(150, 200) / 1000)
 
-            -- اجرای دومین ضربه (Heavy Punch)
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
+            -- اجرای دومین ضربه از دابل پانچ (Normal Punch)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            -- کاهش تأخیر بین کلیک‌ها (1 تا 1.5 ثانیه برای جلوگیری از بن شدن)
+            -- کاهش تأخیر بین هر کلیک (1 تا 1.5 ثانیه برای جلوگیری از بن شدن)
             task.wait(math.random(1000, 1500) / 1000)
 
             debounce = false
         end
 
-        -- اجرای دابل پانچ (Heavy Punch دو بار) با کلیک ماوس و لمس موبایل
+        -- فعال‌سازی روی ماوس و موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                heavyPunch()
+                doublePunch()
             end
         end)
 
         local touchConnection = UserInputService.TouchTap:Connect(function()
-            heavyPunch()
+            doublePunch()
         end)
 
         -- ذخیره اتصالات برای غیرفعال‌سازی
