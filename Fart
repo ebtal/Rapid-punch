@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Fuck The PvP", "", function(state)
+SSection:NewToggle("Fuck Mode PVP ", "", function(state)
     if state then
         getgenv().heavyPunch = true
         local UserInputService = game:GetService("UserInputService")
@@ -829,14 +829,14 @@ SSection:NewToggle("Fuck The PvP", "", function(state)
             debounce = true
 
             -- شبیه‌سازی نگه داشتن کلیک (شارژ کردن ضربه)
-            local holdTime = math.random(600, 800) / 1000 -- بین 0.6 تا 0.8 ثانیه (کمی سریع‌تر از قبل)
+            local holdTime = math.random(700, 900) / 1000 -- بین 0.7 تا 0.9 ثانیه
             task.wait(holdTime)
 
             -- ارسال Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
-            -- کاهش تأخیر بین ضربات (الان بین 0.8 تا 1.2 ثانیه است)
-            task.wait(math.random(800, 1200) / 1000)
+            -- تأخیر برای طبیعی بودن (بین 1 تا 1.5 ثانیه)
+            task.wait(math.random(1000, 1500) / 1000)
 
             debounce = false
         end
@@ -845,12 +845,25 @@ SSection:NewToggle("Fuck The PvP", "", function(state)
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                heavyPunch()
+                -- اجرای دابل پانچ بدون مشکل
+                coroutine.wrap(function()
+                    heavyPunch()
+
+                    -- تأخیر خیلی کم بین دو ضربه دابل پانچ (بین 0.05 تا 0.08 ثانیه)
+                    task.wait(math.random(50, 80) / 1000)
+
+                    -- اجرای دومین ضربه دابل پانچ
+                    heavyPunch()
+                end)()
             end
         end)
 
         local touchConnection = UserInputService.TouchTap:Connect(function()
-            heavyPunch()
+            coroutine.wrap(function()
+                heavyPunch()
+                task.wait(math.random(50, 80) / 1000)
+                heavyPunch()
+            end)()
         end)
 
         -- ذخیره اتصالات برای غیرفعال‌سازی
