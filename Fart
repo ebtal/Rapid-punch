@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Double Punch (One Click)", "", function(state)
+SSection:NewToggle("Fuck the pvp", "", function(state)
     if state then
         getgenv().doublePunch = true
         local UserInputService = game:GetService("UserInputService")
@@ -827,19 +827,19 @@ SSection:NewToggle("Double Punch (One Click)", "", function(state)
         local function doublePunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
-            
+
             -- اولین ضربه
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, math.random(8, 12) / 100, 1)
-            
-            -- تاخیر تصادفی بین دو ضربه (بین 90 تا 130 میلی‌ثانیه)
-            task.wait(math.random(90, 130) / 1000)
-            
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+
+            -- تأخیر زیاد بین ضربه اول و دوم (بین 0.5 تا 0.8 ثانیه)
+            task.wait(math.random(500, 800) / 1000)
+
             -- دومین ضربه
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, math.random(8, 12) / 100, 1)
-            
-            -- تاخیر برای جلوگیری از کلیک بیش از حد سریع (بین 100 تا 150 میلی‌ثانیه)
-            task.wait(math.random(100, 150) / 1000)
-            
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+
+            -- تأخیر طولانی بین هر دابل پانچ (بین 1.5 تا 2.5 ثانیه)
+            task.wait(math.random(1500, 2500) / 1000)
+
             debounce = false
         end
 
