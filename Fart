@@ -828,22 +828,32 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
-            -- اولین ضربه
+            -- شبیه‌سازی نگه داشتن کلیک برای Heavy Punch
+            local holdTime = 1 -- افزایش زمان نگه داشتن به 1 ثانیه
+            task.wait(holdTime)
+
+            -- اجرای Heavy Punch
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
+
+            -- تأخیر کوتاه برای طبیعی‌تر شدن
+            task.wait(0.2)
+
+            -- اجرای اولین ضربه از دابل پانچ (Normal Punch)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            -- تأخیر زیاد بین ضربه اول و دوم (بین 0.5 تا 0.8 ثانیه)
+            -- تأخیر بین دابل پانچ (0.5 تا 0.8 ثانیه)
             task.wait(math.random(500, 800) / 1000)
 
-            -- دومین ضربه
+            -- اجرای دومین ضربه از دابل پانچ (Normal Punch)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            -- تأخیر طولانی بین هر دابل پانچ (بین 1.5 تا 2.5 ثانیه)
+            -- تأخیر بین هر کلیک (1.5 تا 2.5 ثانیه برای جلوگیری از بن شدن)
             task.wait(math.random(1500, 2500) / 1000)
 
             debounce = false
         end
 
-        -- برای ماوس و لمس موبایل
+        -- فعال‌سازی روی ماوس و موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -855,7 +865,7 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             doublePunch()
         end)
 
-        -- ذخیره اتصالات برای قطع کردن بعداً
+        -- ذخیره اتصالات برای غیرفعال‌سازی
         getgenv().doublePunchConnections = {mouseConnection, touchConnection}
     else
         getgenv().doublePunch = false
