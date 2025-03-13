@@ -824,28 +824,45 @@ SSection:NewToggle("Macro", "", function(state)
         local UserInputService = game:GetService("UserInputService")
         local debounce = false
 
-        local function onInputBegan(inputObject, gameProcessedEvent)
-            if gameProcessedEvent or debounce or not doublePunch then return end
+        local function doublePunch()
+            if debounce or not getgenv().doublePunch then return end
+            debounce = true
             
-            if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-                debounce = true
-                
-                -- اولین ضربه
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
-                
-                -- تاخیر کوتاه بین دو ضربه
-                task.wait(0.1) -- این تاخیر را می‌توانید تنظیم کنید
-                
-                -- دومین ضربه
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
-                
-                debounce = false
-            end
+            -- اولین ضربه
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+            
+            -- تاخیر کوتاه بین دو ضربه
+            task.wait(0.1)
+            
+            -- دومین ضربه
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+            
+            debounce = false
         end
 
-        UserInputService.InputBegan:Connect(onInputBegan)
+        -- برای ماوس و لمس موبایل
+        local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if gameProcessed then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                doublePunch()
+            end
+        end)
+
+        local touchConnection = UserInputService.TouchTap:Connect(function()
+            doublePunch()
+        end)
+
+        -- ذخیره اتصالات برای قطع کردن بعداً
+        getgenv().doublePunchConnections = {mouseConnection, touchConnection}
     else
         getgenv().doublePunch = false
+
+        -- قطع کردن رویدادها وقتی غیرفعال می‌شود
+        if getgenv().doublePunchConnections then
+            for _, conn in pairs(getgenv().doublePunchConnections) do
+                conn:Disconnect()
+            end
+        end
     end
 end)
 
