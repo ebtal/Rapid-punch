@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Double Punch (One Click)", "", function(state)
+SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
     if state then
         getgenv().doublePunch = true
         local UserInputService = game:GetService("UserInputService")
