@@ -829,14 +829,14 @@ SSection:NewToggle("Fuck The PvP", "", function(state)
             debounce = true
 
             -- شبیه‌سازی نگه داشتن کلیک (شارژ کردن ضربه)
-            local holdTime = math.random(700, 900) / 1000 -- بین 0.7 تا 0.9 ثانیه
+            local holdTime = math.random(600, 800) / 1000 -- بین 0.6 تا 0.8 ثانیه (کمی سریع‌تر از قبل)
             task.wait(holdTime)
 
             -- ارسال Heavy Punch
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2) -- مقدار دوم یعنی شارژ شده و مقدار سوم یعنی قدرت دوبرابر
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
-            -- تأخیر برای طبیعی بودن (بین 1 تا 1.5 ثانیه)
-            task.wait(math.random(1000, 1500) / 1000)
+            -- کاهش تأخیر بین ضربات (الان بین 0.8 تا 1.2 ثانیه است)
+            task.wait(math.random(800, 1200) / 1000)
 
             debounce = false
         end
