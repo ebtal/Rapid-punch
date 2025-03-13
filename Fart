@@ -823,8 +823,9 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         getgenv().doublePunch = true
         local UserInputService = game:GetService("UserInputService")
         local debounce = false
+        local Stamina = 100 -- مقدار مجازی استقامت
 
-        local function doublePunch()
+        local function heavyPunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
@@ -832,11 +833,28 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             local holdTime = 1 -- افزایش زمان نگه داشتن به 1 ثانیه
             task.wait(holdTime)
 
-            -- اجرای Heavy Punch
+            -- ارسال Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
+
+            -- کاهش مقدار استقامت برای طبیعی بودن
+            Stamina = Stamina - 20  
+            if Stamina <= 0 then 
+                Stamina = 100 -- وقتی استقامت صفر شد، دوباره پرش کن
+                task.wait(1) -- وقفه برای پر شدن دوباره استقامت
+            end
 
             -- تأخیر کوتاه برای طبیعی‌تر شدن
             task.wait(0.2)
+
+            debounce = false
+        end
+
+        local function doublePunch()
+            if debounce or not getgenv().doublePunch then return end
+            debounce = true
+
+            -- اجرای Heavy Punch قبل از دابل پانچ
+            heavyPunch()
 
             -- اجرای اولین ضربه از دابل پانچ (Normal Punch)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
@@ -853,7 +871,7 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             debounce = false
         end
 
-        -- فعال‌سازی روی ماوس و موبایل
+        -- اجرای دابل پانچ با کلیک ماوس و لمس موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
