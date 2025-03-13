@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Fuck Mode PVP ", "", function(state)
+SSection:NewToggle("Fuck Mode  PVP  ", "", function(state)
     if state then
         getgenv().heavyPunch = true
         local UserInputService = game:GetService("UserInputService")
@@ -828,42 +828,43 @@ SSection:NewToggle("Fuck Mode PVP ", "", function(state)
             if debounce or not getgenv().heavyPunch then return end
             debounce = true
 
-            -- شبیه‌سازی نگه داشتن کلیک (شارژ کردن ضربه)
-            local holdTime = math.random(700, 900) / 1000 -- بین 0.7 تا 0.9 ثانیه
+            -- شبیه‌سازی نگه داشتن کلیک (Heavy Punch)
+            local holdTime = math.random(700, 800) / 1000 -- بین 0.7 تا 0.8 ثانیه
             task.wait(holdTime)
 
             -- ارسال Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
-            -- تأخیر برای طبیعی بودن (بین 1 تا 1.5 ثانیه)
-            task.wait(math.random(1000, 1500) / 1000)
-
+            -- رفع دیباونس بعد از زمان کوتاه‌تر
+            task.wait(0.5) 
             debounce = false
+        end
+
+        -- دابل پانچ پایدار و ۱۰۰٪ دقیق
+        local function doubleHeavyPunch()
+            if debounce or not getgenv().heavyPunch then return end
+            debounce = true
+
+            -- اجرای ضربه اول (Heavy Punch)
+            heavyPunch()
+
+            -- تأخیر خیلی کم بین دابل پانچ (بین 0.05 تا 0.07 ثانیه)
+            task.wait(math.random(50, 70) / 1000)
+
+            -- اجرای ضربه دوم (Heavy Punch)
+            heavyPunch()
         end
 
         -- برای ماوس و موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                -- اجرای دابل پانچ بدون مشکل
-                coroutine.wrap(function()
-                    heavyPunch()
-
-                    -- تأخیر خیلی کم بین دو ضربه دابل پانچ (بین 0.05 تا 0.08 ثانیه)
-                    task.wait(math.random(50, 80) / 1000)
-
-                    -- اجرای دومین ضربه دابل پانچ
-                    heavyPunch()
-                end)()
+                doubleHeavyPunch()
             end
         end)
 
         local touchConnection = UserInputService.TouchTap:Connect(function()
-            coroutine.wrap(function()
-                heavyPunch()
-                task.wait(math.random(50, 80) / 1000)
-                heavyPunch()
-            end)()
+            doubleHeavyPunch()
         end)
 
         -- ذخیره اتصالات برای غیرفعال‌سازی
