@@ -818,7 +818,7 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Fuck Mode  PVP  ", "", function(state)
+SSection:NewToggle("Fuck Mode PvP", "", function(state)
     if state then
         getgenv().heavyPunch = true
         local UserInputService = game:GetService("UserInputService")
@@ -828,34 +828,39 @@ SSection:NewToggle("Fuck Mode  PVP  ", "", function(state)
             if debounce or not getgenv().heavyPunch then return end
             debounce = true
 
-            -- شبیه‌سازی نگه داشتن کلیک (Heavy Punch)
-            local holdTime = math.random(700, 800) / 1000 -- بین 0.7 تا 0.8 ثانیه
+            -- شبیه‌سازی نگه داشتن کلیک برای Heavy Punch
+            local holdTime = 0.75 -- دقیقاً 0.75 ثانیه نگه داشتن
+
             task.wait(holdTime)
 
             -- ارسال Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
-            -- رفع دیباونس بعد از زمان کوتاه‌تر
-            task.wait(0.5) 
+            -- رفع دیباونس بعد از 0.4 ثانیه (بهینه شده)
+            task.wait(0.4)
             debounce = false
         end
 
-        -- دابل پانچ پایدار و ۱۰۰٪ دقیق
+        -- دابل پانچ **با بهترین تأخیر ممکن**
         local function doubleHeavyPunch()
             if debounce or not getgenv().heavyPunch then return end
             debounce = true
 
-            -- اجرای ضربه اول (Heavy Punch)
+            -- اجرای ضربه اول
             heavyPunch()
 
-            -- تأخیر خیلی کم بین دابل پانچ (بین 0.05 تا 0.07 ثانیه)
-            task.wait(math.random(50, 70) / 1000)
+            -- تأخیر دقیق بین دابل پانچ (0.1 ثانیه)
+            task.wait(0.1)
 
-            -- اجرای ضربه دوم (Heavy Punch)
+            -- اجرای ضربه دوم
             heavyPunch()
+
+            -- رفع دیباونس برای کلیک بعدی (0.4 ثانیه)
+            task.wait(0.4)
+            debounce = false
         end
 
-        -- برای ماوس و موبایل
+        -- اجرای دابل پانچ با کلیک ماوس و لمس موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -867,12 +872,12 @@ SSection:NewToggle("Fuck Mode  PVP  ", "", function(state)
             doubleHeavyPunch()
         end)
 
-        -- ذخیره اتصالات برای غیرفعال‌سازی
+        -- ذخیره اتصالات برای خاموش کردن
         getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
     else
         getgenv().heavyPunch = false
 
-        -- قطع کردن رویدادها وقتی غیرفعال می‌شود
+        -- قطع رویدادها وقتی غیرفعال می‌شه
         if getgenv().heavyPunchConnections then
             for _, conn in pairs(getgenv().heavyPunchConnections) do
                 conn:Disconnect()
