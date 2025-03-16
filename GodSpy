@@ -2,8 +2,7 @@
     Advanced Chat Spy  
     Features:  
     - GUI for enabling/disabling chat spy  
-    - Logs private and public chat messages  
-    - Bypasses chat filters for accurate spying  
+    - Logs private chat messages  
     - Includes a creator button ("Created by GodAmirr")  
 --]]
 
@@ -32,29 +31,30 @@ toggleButton.Font = Enum.Font.SourceSansBold
 toggleButton.TextSize = 18
 
 -- Creator Label
-local creatorButton = Instance.new("TextButton", screenGui)
-creatorButton.Size = UDim2.new(0, 200, 0, 40)
-creatorButton.Position = UDim2.new(0.85, 0, 0.17, 0)
-creatorButton.Text = "Created by GodAmirr"
-creatorButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-creatorButton.TextColor3 = Color3.fromRGB(255, 255, 0)
-creatorButton.Font = Enum.Font.SourceSansBold
-creatorButton.TextSize = 16
-creatorButton.AutoButtonColor = false  -- Prevents clicking effect
+local creatorLabel = Instance.new("TextLabel", screenGui)
+creatorLabel.Size = UDim2.new(0, 200, 0, 40)
+creatorLabel.Position = UDim2.new(0.85, 0, 0.17, 0)
+creatorLabel.Text = "Created by GodAmirr"
+creatorLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+creatorLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+creatorLabel.Font = Enum.Font.SourceSansBold
+creatorLabel.TextSize = 16
 
-local function logMessage(speaker, msg)
-    table.insert(chatLogs, "[" .. speaker .. "]: " .. msg)
+-- Function to log private messages
+local function logPrivateMessage(sender, msg)
+    table.insert(chatLogs, "[" .. sender .. "]: " .. msg)
     StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = "{SPY} [" .. speaker .. "]: " .. msg;
+        Text = "{SPY} [" .. sender .. "]: " .. msg;
         Color = Color3.fromRGB(0, 255, 0);
         Font = Enum.Font.SourceSansBold;
         TextSize = 16;
     })
 end
 
+-- Function to handle chatted messages
 local function onChatted(p, msg)
     if spyEnabled then
-        msg = msg:gsub("[\n\r]", ''):gsub("\t", ' '):gsub("[ ]+", ' ')
+        -- Only log private messages (exclude public)
         local hidden = true
         local conn = getmsg.OnClientEvent:Connect(function(packet, channel)
             if packet.SpeakerUserId == p.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
@@ -63,23 +63,27 @@ local function onChatted(p, msg)
         end)
         wait(1)
         conn:Disconnect()
+
+        -- If message is not public, log it
         if hidden then
-            logMessage(p.Name, msg)
+            logPrivateMessage(p.Name, msg)
         end
     end
 end
 
+-- Toggle button functionality
 toggleButton.MouseButton1Click:Connect(function()
     spyEnabled = not spyEnabled
     toggleButton.Text = spyEnabled and "Disable Chat Spy" or "Enable Chat Spy"
     StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = "{SPY " .. (spyEnabled and "ENABLED" or "DISABLED") .. "}";
-        Color = Color3.fromRGB(255, 255, 0);
-        Font = Enum.Font.SourceSansBold;
+        Text = "{SPY " .. (spyEnabled and "ENABLED" or "DISABLED") .. "}"; 
+        Color = Color3.fromRGB(255, 255, 0); 
+        Font = Enum.Font.SourceSansBold; 
         TextSize = 18;
     })
 end)
 
+-- Connect to all players' chat messages
 for _, p in ipairs(Players:GetPlayers()) do
     p.Chatted:Connect(function(msg) onChatted(p, msg) end)
 end
