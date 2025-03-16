@@ -824,34 +824,28 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         local touchStartTime = 0
         local debounce = false
 
-        -- ذخیره زمان شروع تاچ یا کلیک
         game:GetService("UserInputService").TouchStarted:Connect(function(touchInput, gameProcessed)
             if gameProcessed then return end
             touchStartTime = os.clock()
         end)
 
-        -- اجرای سریع‌تر ضربه با دمیج دو برابر
         local function singlePunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
-            -- اجرای یک ضربه سریع با دمیج دو برابر
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.05, 2) 
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.05, 2)
 
-            -- کاهش زمان انتظار برای اجرای دوباره ضربه
-            task.wait(0.2) -- این مقدار را می‌توان کمتر هم کرد (مثلاً 0.15 یا 0.1)
+            task.wait(0.2)
             debounce = false
         end
 
-        -- اجرای ضربه هنگام پایان تاچ
         game:GetService("UserInputService").TouchEnded:Connect(function(touchInput, gameProcessed)
             if gameProcessed or not getgenv().doublePunch then return end
-            if os.clock() - touchStartTime < 0.2 then  -- کاهش مقدار 0.3 به 0.2 برای حساسیت بیشتر
+            if os.clock() - touchStartTime < 0.2 then
                 singlePunch()
             end
         end)
 
-        -- اجرای ضربه هنگام کلیک ماوس
         game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -863,7 +857,6 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         getgenv().doublePunch = false
     end
 end)
-
 SSection:NewToggle("Super Rapid Punch", "", function(state)
 	if state then
 		getgenv().superrapid = true;
