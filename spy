@@ -33,31 +33,32 @@ creatorButton.Font = Enum.Font.SourceSansBold
 creatorButton.TextSize = 16
 creatorButton.AutoButtonColor = false  -- Prevents clicking effect
 
-local function logMessage(speaker, msg, recipient)
-    local logText = "[" .. speaker .. "]: " .. msg
-    if recipient then
-        logText = logText .. " (To: " .. recipient .. ")"
-    end
-    table.insert(chatLogs, logText)
+local function logMessage(speaker, msg)
+    table.insert(chatLogs, "[" .. speaker .. "]: " .. msg)
     StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = "{SPY} " .. logText;
+        Text = "{SPY} [" .. speaker .. "]: " .. msg;
         Color = Color3.fromRGB(0, 255, 0);
         Font = Enum.Font.SourceSansBold;
         TextSize = 16;
     })
 end
 
-local function onMessageFiltered(packet, channel)
-    if spyEnabled and packet.MessageType == "PrivateMessage" then
-        local speaker = Players:GetPlayerByUserId(packet.SpeakerUserId)
-        local recipient = Players:GetPlayerByUserId(packet.TargetId)
-        if speaker and recipient then
-            logMessage(speaker.Name, packet.Message, recipient.Name)
+local function onChatted(p, msg)
+    if spyEnabled then
+        msg = msg:gsub("[\n\r]", ''):gsub("\t", ' '):gsub("[ ]+", ' ')
+        local hidden = true
+        local conn = getmsg.OnClientEvent:Connect(function(packet, channel)
+            if packet.SpeakerUserId == p.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
+                hidden = false
+            end
+        end)
+        wait(1)
+        conn:Disconnect()
+        if hidden then
+            logMessage(p.Name, msg)
         end
     end
 end
-
-getmsg.OnClientEvent:Connect(onMessageFiltered)
 
 toggleButton.MouseButton1Click:Connect(function()
     spyEnabled = not spyEnabled
@@ -68,4 +69,12 @@ toggleButton.MouseButton1Click:Connect(function()
         Font = Enum.Font.SourceSansBold;
         TextSize = 18;
     })
+end)
+
+for _, p in ipairs(Players:GetPlayers()) do
+    p.Chatted:Connect(function(msg) onChatted(p, msg) end)
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.Chatted:Connect(function(msg) onChatted(p, msg) end)
 end)
