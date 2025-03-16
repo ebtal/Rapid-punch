@@ -33,14 +33,10 @@ creatorButton.Font = Enum.Font.SourceSansBold
 creatorButton.TextSize = 16
 creatorButton.AutoButtonColor = false  -- Prevents clicking effect
 
-local function logMessage(speaker, msg, recipient)
-    local logText = "[" .. speaker .. "]: " .. msg
-    if recipient then
-        logText = logText .. " (To: " .. recipient .. ")"
-    end
-    table.insert(chatLogs, logText)
+local function logMessage(speaker, msg)
+    table.insert(chatLogs, "[" .. speaker .. "]: " .. msg)
     StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = "{SPY} " .. logText;
+        Text = "{SPY} [" .. speaker .. "]: " .. msg;
         Color = Color3.fromRGB(0, 255, 0);
         Font = Enum.Font.SourceSansBold;
         TextSize = 16;
@@ -54,14 +50,6 @@ local function onChatted(p, msg)
         local conn = getmsg.OnClientEvent:Connect(function(packet, channel)
             if packet.SpeakerUserId == p.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
                 hidden = false
-                if packet.MessageType == "PrivateMessage" then
-                    local recipient = Players:GetPlayerByUserId(packet.TargetId)
-                    if recipient then
-                        logMessage(p.Name, packet.Message, recipient.Name)
-                    end
-                else
-                    logMessage(p.Name, packet.Message)
-                end
             end
         end)
         wait(1)
