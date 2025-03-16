@@ -33,30 +33,43 @@ creatorButton.Font = Enum.Font.SourceSansBold
 creatorButton.TextSize = 16
 creatorButton.AutoButtonColor = false  -- Prevents clicking effect
 
-local function logMessage(speaker, msg)
-    table.insert(chatLogs, "[" .. speaker .. "]: " .. msg)
+local function logMessage(sender, receiver, msg, isPrivate)
+    local senderName = "<font color='rgb(0, 170, 255)'>" .. sender .. "</font>" -- آبی
+    local receiverName = receiver and "<font color='rgb(255, 0, 0)'>" .. receiver .. "</font>" or "" -- قرمز (در پیام خصوصی)
+    local messageText = isPrivate and (senderName .. " writing to " .. receiverName .. ": " .. msg) or ("[" .. sender .. "]: " .. msg)
+
+    table.insert(chatLogs, messageText)
     StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = "{SPY} [" .. speaker .. "]: " .. msg;
+        Text = isPrivate and "{SPY} " .. sender .. " writing to " .. receiver .. ": " .. msg or "{SPY} [" .. sender .. "]: " .. msg;
         Color = Color3.fromRGB(0, 255, 0);
         Font = Enum.Font.SourceSansBold;
         TextSize = 16;
     })
 end
 
-local function onChatted(p, msg)
+local function onChatted(sender, msg)
     if spyEnabled then
         msg = msg:gsub("[\n\r]", ''):gsub("\t", ' '):gsub("[ ]+", ' ')
-        local hidden = true
+        local isPrivate = false
+        local receiver = nil
+
+        -- بررسی پیام‌های خصوصی
         local conn = getmsg.OnClientEvent:Connect(function(packet, channel)
-            if packet.SpeakerUserId == p.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
-                hidden = false
+            if packet.SpeakerUserId == sender.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
+                if packet.RecipientUserId then
+                    local recipientPlayer = Players:GetPlayerByUserId(packet.RecipientUserId)
+                    if recipientPlayer then
+                        receiver = recipientPlayer.Name
+                        isPrivate = true
+                    end
+                end
             end
         end)
+
         wait(1)
         conn:Disconnect()
-        if hidden then
-            logMessage(p.Name, msg)
-        end
+
+        logMessage(sender.Name, receiver, msg, isPrivate)
     end
 end
 
