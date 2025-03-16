@@ -1,3 +1,12 @@
+--[[  
+    Advanced Chat Spy  
+    Features:  
+    - GUI for enabling/disabling chat spy  
+    - Logs private and public chat messages  
+    - Bypasses chat filters for accurate spying  
+    - Includes a creator button ("Created by GodAmirr")  
+--]]
+
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -33,43 +42,30 @@ creatorButton.Font = Enum.Font.SourceSansBold
 creatorButton.TextSize = 16
 creatorButton.AutoButtonColor = false  -- Prevents clicking effect
 
-local function logMessage(sender, receiver, msg, isPrivate)
-    local senderName = "<font color='rgb(0, 170, 255)'>" .. sender .. "</font>" -- آبی
-    local receiverName = receiver and "<font color='rgb(255, 0, 0)'>" .. receiver .. "</font>" or "" -- قرمز (در پیام خصوصی)
-    local messageText = isPrivate and (senderName .. " writing to " .. receiverName .. ": " .. msg) or ("[" .. sender .. "]: " .. msg)
-
-    table.insert(chatLogs, messageText)
+local function logMessage(speaker, msg)
+    table.insert(chatLogs, "[" .. speaker .. "]: " .. msg)
     StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = isPrivate and "{SPY} " .. sender .. " writing to " .. receiver .. ": " .. msg or "{SPY} [" .. sender .. "]: " .. msg;
+        Text = "{SPY} [" .. speaker .. "]: " .. msg;
         Color = Color3.fromRGB(0, 255, 0);
         Font = Enum.Font.SourceSansBold;
         TextSize = 16;
     })
 end
 
-local function onChatted(sender, msg)
+local function onChatted(p, msg)
     if spyEnabled then
         msg = msg:gsub("[\n\r]", ''):gsub("\t", ' '):gsub("[ ]+", ' ')
-        local isPrivate = false
-        local receiver = nil
-
-        -- بررسی پیام‌های خصوصی
+        local hidden = true
         local conn = getmsg.OnClientEvent:Connect(function(packet, channel)
-            if packet.SpeakerUserId == sender.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
-                if packet.RecipientUserId then
-                    local recipientPlayer = Players:GetPlayerByUserId(packet.RecipientUserId)
-                    if recipientPlayer then
-                        receiver = recipientPlayer.Name
-                        isPrivate = true
-                    end
-                end
+            if packet.SpeakerUserId == p.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
+                hidden = false
             end
         end)
-
         wait(1)
         conn:Disconnect()
-
-        logMessage(sender.Name, receiver, msg, isPrivate)
+        if hidden then
+            logMessage(p.Name, msg)
+        end
     end
 end
 
