@@ -1,4 +1,4 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+‌local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("Omni - Man farm", "Ocean");
 local Tab = Window:NewTab("AutoFarm Menu");
 local MainSection = Tab:NewSection("AutoFarm Menu");
@@ -830,23 +830,23 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             touchStartTime = os.clock()
         end)
 
-        -- اجرای ضربه با دمیج دو برابر اما فقط یک ضربه
+        -- اجرای سریع‌تر ضربه با دمیج دو برابر
         local function singlePunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
-            -- اجرای تنها یک ضربه با دمیج دو برابر
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.1, 2)
+            -- اجرای یک ضربه سریع با دمیج دو برابر
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.05, 2) 
 
-            -- جلوگیری از اسپم شدن ضربه‌ها
-            task.wait(0.5) -- تأخیر نیم‌ثانیه‌ای بین کلیک‌ها برای جلوگیری از اجرای مداوم
+            -- کاهش زمان انتظار برای اجرای دوباره ضربه
+            task.wait(0.2) -- این مقدار را می‌توان کمتر هم کرد (مثلاً 0.15 یا 0.1)
             debounce = false
         end
 
         -- اجرای ضربه هنگام پایان تاچ
         game:GetService("UserInputService").TouchEnded:Connect(function(touchInput, gameProcessed)
             if gameProcessed or not getgenv().doublePunch then return end
-            if os.clock() - touchStartTime < 0.3 then
+            if os.clock() - touchStartTime < 0.2 then  -- کاهش مقدار 0.3 به 0.2 برای حساسیت بیشتر
                 singlePunch()
             end
         end)
