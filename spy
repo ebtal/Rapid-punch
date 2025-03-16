@@ -1,0 +1,80 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local saymsg = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest")
+local getmsg = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("OnMessageDoneFiltering")
+
+local player = Players.LocalPlayer
+local spyEnabled = false
+local chatLogs = {}
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui", player.PlayerGui)
+screenGui.Name = "ChatSpyGUI"
+
+-- Toggle Button for Chat Spy
+local toggleButton = Instance.new("TextButton", screenGui)
+toggleButton.Size = UDim2.new(0, 150, 0, 50)
+toggleButton.Position = UDim2.new(0.85, 0, 0.1, 0)
+toggleButton.Text = "Enable Chat Spy"
+toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 18
+
+-- Creator Label
+local creatorButton = Instance.new("TextButton", screenGui)
+creatorButton.Size = UDim2.new(0, 200, 0, 40)
+creatorButton.Position = UDim2.new(0.85, 0, 0.17, 0)
+creatorButton.Text = "Created by GodAmirr"
+creatorButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+creatorButton.TextColor3 = Color3.fromRGB(255, 255, 0)
+creatorButton.Font = Enum.Font.SourceSansBold
+creatorButton.TextSize = 16
+creatorButton.AutoButtonColor = false  -- Prevents clicking effect
+
+local function logMessage(speaker, msg)
+    table.insert(chatLogs, "[" .. speaker .. "]: " .. msg)
+    StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = "{SPY} [" .. speaker .. "]: " .. msg;
+        Color = Color3.fromRGB(0, 255, 0);
+        Font = Enum.Font.SourceSansBold;
+        TextSize = 16;
+    })
+end
+
+local function onChatted(p, msg)
+    if spyEnabled then
+        msg = msg:gsub("[\n\r]", ''):gsub("\t", ' '):gsub("[ ]+", ' ')
+        local hidden = true
+        local conn = getmsg.OnClientEvent:Connect(function(packet, channel)
+            if packet.SpeakerUserId == p.UserId and packet.Message == msg:sub(#msg - #packet.Message + 1) then
+                hidden = false
+            end
+        end)
+        wait(1)
+        conn:Disconnect()
+        if hidden then
+            logMessage(p.Name, msg)
+        end
+    end
+end
+
+toggleButton.MouseButton1Click:Connect(function()
+    spyEnabled = not spyEnabled
+    toggleButton.Text = spyEnabled and "Disable Chat Spy" or "Enable Chat Spy"
+    StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = "{SPY " .. (spyEnabled and "ENABLED" or "DISABLED") .. "}";
+        Color = Color3.fromRGB(255, 255, 0);
+        Font = Enum.Font.SourceSansBold;
+        TextSize = 18;
+    })
+end)
+
+for _, p in ipairs(Players:GetPlayers()) do
+    p.Chatted:Connect(function(msg) onChatted(p, msg) end)
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.Chatted:Connect(function(msg) onChatted(p, msg) end)
+end)
