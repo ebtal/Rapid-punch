@@ -1,4 +1,4 @@
-‌local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("Omni - Man farm", "Ocean");
 local Tab = Window:NewTab("AutoFarm Menu");
 local MainSection = Tab:NewSection("AutoFarm Menu");
@@ -824,28 +824,37 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         local touchStartTime = 0
         local debounce = false
 
+        -- ذخیره زمان شروع تاچ یا کلیک
         game:GetService("UserInputService").TouchStarted:Connect(function(touchInput, gameProcessed)
             if gameProcessed then return end
             touchStartTime = os.clock()
         end)
 
+        -- اجرای ضربه با دمیج دو برابر اما با سرعت کمتر
         local function singlePunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.05, 2)
+            spawn(function()
+                for _ = 1, 5 do -- تعداد ضربه‌ها کاهش یافت (از ۱۰ به ۵)
+                    game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.1, 2)
+                    task.wait(0.05) -- تاخیر بین ضربه‌ها افزایش یافت (از ۰.۰۱ به ۰.۰۵)
+                end
+            end)
 
-            task.wait(0.2)
+            task.wait(0.5) -- تأخیر نیم‌ثانیه‌ای بین کلیک‌ها
             debounce = false
         end
 
+        -- اجرای ضربه هنگام پایان تاچ
         game:GetService("UserInputService").TouchEnded:Connect(function(touchInput, gameProcessed)
             if gameProcessed or not getgenv().doublePunch then return end
-            if os.clock() - touchStartTime < 0.2 then
+            if os.clock() - touchStartTime < 0.3 then
                 singlePunch()
             end
         end)
 
+        -- اجرای ضربه هنگام کلیک ماوس
         game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -857,6 +866,7 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         getgenv().doublePunch = false
     end
 end)
+
 SSection:NewToggle("Super Rapid Punch", "", function(state)
 	if state then
 		getgenv().superrapid = true;
