@@ -836,8 +836,8 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             task.wait(holdTime)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
-            -- تأخیر بین کلیک‌ها به صورت **نیمه تصادفی** (بین 0.98 تا 1.02 ثانیه)
-            task.wait(math.random(980, 1020) / 1000)
+            -- تأخیر بین کلیک‌ها **نیمه تصادفی بین 0.97 تا 1.1 ثانیه**
+            task.wait(math.random(970, 1100) / 1000)
 
             debounce = false
         end
