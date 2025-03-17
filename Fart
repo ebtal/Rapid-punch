@@ -820,21 +820,18 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
 end)
 SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
     if state then
-        getgenv().doublePunch = true
+        getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
         local debounce = false
 
-        local function singleHeavyPunch()
-            if debounce or not getgenv().doublePunch then return end
+        local function heavyPunch()
+            if debounce or not getgenv().heavyPunchOnly then return end
             debounce = true
 
-            -- اجرای ضربه‌ی معمولی (Normal Punch)
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
+            -- تأخیر 0.5 ثانیه بعد از کلیک
+            task.wait(0.5)
 
-            -- تأخیر کوتاه بین ضربه‌ی معمولی و Heavy Punch (طبیعی‌تر بشه)
-            task.wait(0.2)
-
-            -- اجرای یک ضربه‌ی اضافی که Heavy Punch باشه
+            -- اجرای Heavy Punch
             local holdTime = 1 -- شبیه‌سازی نگه داشتن کلیک برای Heavy Punch
             task.wait(holdTime)
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
@@ -849,22 +846,22 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                singleHeavyPunch()
+                heavyPunch()
             end
         end)
 
         local touchConnection = UserInputService.TouchTap:Connect(function()
-            singleHeavyPunch()
+            heavyPunch()
         end)
 
         -- ذخیره اتصالات برای غیرفعال‌سازی
-        getgenv().doublePunchConnections = {mouseConnection, touchConnection}
+        getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
     else
-        getgenv().doublePunch = false
+        getgenv().heavyPunchOnly = false
 
         -- قطع کردن رویدادها وقتی غیرفعال می‌شود
-        if getgenv().doublePunchConnections then
-            for _, conn in pairs(getgenv().doublePunchConnections) do
+        if getgenv().heavyPunchConnections then
+            for _, conn in pairs(getgenv().heavyPunchConnections) do
                 conn:Disconnect()
             end
         end
