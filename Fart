@@ -831,10 +831,10 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             -- تأخیر 0.5 ثانیه بعد از کلیک
             task.wait(0.5)
 
-            -- اجرای ضربه با دمیج بالا (شبیه به Heavy Punch)
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.2, 1.5) 
+            -- اجرای فقط یک Heavy Punch
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 1, 2)
 
-            -- تأخیر بین کلیک‌ها **بین 0.3 تا 0.5 ثانیه**
+            -- تأخیر بین کلیک‌ها (بین 0.3 تا 0.5 ثانیه)
             task.wait(math.random(300, 500) / 1000)
 
             debounce = false
