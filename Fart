@@ -821,49 +821,53 @@ end)
 SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
     if state then
         getgenv().doublePunch = true
-        local touchStartTime = 0
+        local UserInputService = game:GetService("UserInputService")
         local debounce = false
 
-        -- ذخیره زمان شروع تاچ یا کلیک
-        game:GetService("UserInputService").TouchStarted:Connect(function(touchInput, gameProcessed)
-            if gameProcessed then return end
-            touchStartTime = os.clock()
-        end)
-
-        -- اجرای ضربه با دمیج دو برابر اما با سرعت کمتر
-        local function singlePunch()
+        local function singleHeavyPunch()
             if debounce or not getgenv().doublePunch then return end
             debounce = true
 
-            spawn(function()
-                for _ = 1, 5 do -- تعداد ضربه‌ها کاهش یافت (از ۱۰ به ۵)
-                    game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.1, 2)
-                    task.wait(0.05) -- تاخیر بین ضربه‌ها افزایش یافت (از ۰.۰۱ به ۰.۰۵)
-                end
-            end)
+            -- اجرای ضربه‌ی معمولی (Normal Punch)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0, 0.1, 1)
 
-            task.wait(0.5) -- تأخیر نیم‌ثانیه‌ای بین کلیک‌ها
+            -- تأخیر کوتاه بین ضربه‌ی معمولی و Heavy Punch (طبیعی‌تر بشه)
+            task.wait(0.2)
+
+            -- اجرای یک ضربه‌ی اضافی که Heavy Punch باشه
+            local holdTime = 1 -- شبیه‌سازی نگه داشتن کلیک برای Heavy Punch
+            task.wait(holdTime)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
+
+            -- تأخیر بین کلیک‌ها برای طبیعی موندن (1.2 تا 1.5 ثانیه)
+            task.wait(math.random(1200, 1500) / 1000)
+
             debounce = false
         end
 
-        -- اجرای ضربه هنگام پایان تاچ
-        game:GetService("UserInputService").TouchEnded:Connect(function(touchInput, gameProcessed)
-            if gameProcessed or not getgenv().doublePunch then return end
-            if os.clock() - touchStartTime < 0.3 then
-                singlePunch()
-            end
-        end)
-
-        -- اجرای ضربه هنگام کلیک ماوس
-        game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+        -- فعال‌سازی روی ماوس و موبایل
+        local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                singlePunch()
+                singleHeavyPunch()
             end
         end)
 
+        local touchConnection = UserInputService.TouchTap:Connect(function()
+            singleHeavyPunch()
+        end)
+
+        -- ذخیره اتصالات برای غیرفعال‌سازی
+        getgenv().doublePunchConnections = {mouseConnection, touchConnection}
     else
         getgenv().doublePunch = false
+
+        -- قطع کردن رویدادها وقتی غیرفعال می‌شود
+        if getgenv().doublePunchConnections then
+            for _, conn in pairs(getgenv().doublePunchConnections) do
+                conn:Disconnect()
+            end
+        end
     end
 end)
 
