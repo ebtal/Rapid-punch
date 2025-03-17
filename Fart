@@ -828,11 +828,12 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             if debounce or not getgenv().heavyPunchOnly then return end
             debounce = true
 
-            -- تأخیر 0.5 ثانیه بعد از کلیک
+            -- تأخیر 0.5 ثانیه بعد از کلیک (طبیعی‌تر شدن)
             task.wait(0.5)
 
-            -- اجرای فقط یک Heavy Punch
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 1, 2)
+            -- شبیه‌سازی نگه داشتن کلیک برای Heavy Punch
+            local holdTime = 1  
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, holdTime, 2)
 
             -- تأخیر بین کلیک‌ها (بین 0.3 تا 0.5 ثانیه)
             task.wait(math.random(300, 500) / 1000)
@@ -840,7 +841,7 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             debounce = false
         end
 
-        -- فعال‌سازی روی ماوس و موبایل
+        -- اجرای کد روی ماوس و موبایل
         local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
