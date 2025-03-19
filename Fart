@@ -857,7 +857,7 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             end
 
             -- اجرای اولین Heavy Punch بلافاصله بعد از کلیک
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 1, 2)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
 
             -- کاهش تاخیر بین دو ضربه به ۰.۰۸ ثانیه (خیلی سریع اجرا بشه)
             task.wait(0.3)
