@@ -818,29 +818,20 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
+SSection:NewToggle("F Mode (PvP)", "", function(state)
     if state then
         getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
         local debounce = false
-        local hitCount = 0 -- شمارنده تعداد ضربات وارد شده
 
         local function heavyPunch()
             if debounce or not getgenv().heavyPunchOnly then return end
             debounce = true
 
-            hitCount = hitCount + 1 -- افزایش تعداد ضربات
-
-            -- تعیین تأخیر بر اساس تعداد ضربات
-            local delayTime = (hitCount % 3 == 0) and 0.5 or 1
-
             -- اجرای Heavy Punch بعد از تأخیر مشخص
-            task.wait(delayTime)
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.7, 2)
+            task.wait(0.5) -- مقدار تأخیر همیشه ۰.۵ ثانیه
 
-            -- اگر اسپم متوقف شد، شمارنده ریست شود
-            task.wait(1)
-            hitCount = 0
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.5, 2)
 
             debounce = false
         end
