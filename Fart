@@ -818,52 +818,63 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("Fu Mode (PvP)", "", function(state) if state then getgenv().heavyPunchOnly = true local UserInputService = game:GetService("UserInputService") local debounce = false local hitCount = 0 -- شمارنده تعداد ضربات وارد شده
+SSection:NewToggle("Fu Mode (PvP)", "", function(state)
+    if state then
+        getgenv().heavyPunchOnly = true
+        local UserInputService = game:GetService("UserInputService")
+        local debounce = false
+        local hitCount = 0 -- شمارنده تعداد ضربات وارد شده
+        local lastHitTime = 0 -- ذخیره زمان آخرین ضربه
 
-local function heavyPunch()
-        if debounce or not getgenv().heavyPunchOnly then return end
-        debounce = true
+        local function heavyPunch()
+            if debounce or not getgenv().heavyPunchOnly then return end
+            debounce = true
 
-        hitCount = hitCount + 1 -- افزایش تعداد ضربات
+            hitCount = hitCount + 1 -- افزایش تعداد ضربات
+            local currentTime = tick() -- دریافت زمان فعلی
 
-        -- تعیین تأخیر بر اساس تعداد ضربات
-        local delayTime = (hitCount % 3 == 0) and 0.4 or 0.8
+            -- تعیین تأخیر بر اساس تعداد ضربات
+            local delayTime = (hitCount % 3 == 0) and 0.5 or 0.5
 
-        -- اجرای Heavy Punch بعد از تأخیر مشخص
-        task.wait(delayTime)
-        game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.6, 2)
+            -- اطمینان از اینکه Heavy Punch سریع‌تر اجرا می‌شود
+            if currentTime - lastHitTime > 1 then
+                hitCount = 1 -- اگر 1 ثانیه از آخرین ضربه گذشته، شمارنده ریست شود
+            end
 
-        -- اگر اسپم متوقف شد، شمارنده ریست شود
-        task.wait(1)
-        hitCount = 0
+            lastHitTime = currentTime -- ذخیره زمان ضربه
 
-        debounce = false
-    end
+            -- اجرای Heavy Punch بعد از تأخیر مشخص
+            task.wait(delayTime)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.6, 2)
 
-    -- اجرای کد روی ماوس و موبایل
-    local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            debounce = false
+        end
+
+        -- اجرای کد روی ماوس و موبایل
+        local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if gameProcessed then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                heavyPunch()
+            end
+        end)
+
+        local touchConnection = UserInputService.TouchTap:Connect(function()
             heavyPunch()
-        end
-    end)
+        end)
 
-    local touchConnection = UserInputService.TouchTap:Connect(function()
-        heavyPunch()
-    end)
+        -- ذخیره اتصالات برای غیرفعال‌سازی
+        getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
+    else
+        getgenv().heavyPunchOnly = false
 
-    -- ذخیره اتصالات برای غیرفعال‌سازی
-    getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
-else
-    getgenv().heavyPunchOnly = false
-
-    -- قطع کردن رویدادها وقتی غیرفعال می‌شود
-    if getgenv().heavyPunchConnections then
-        for _, conn in pairs(getgenv().heavyPunchConnections) do
-            conn:Disconnect()
+        -- قطع کردن رویدادها وقتی غیرفعال می‌شود
+        if getgenv().heavyPunchConnections then
+            for _, conn in pairs(getgenv().heavyPunchConnections) do
+                conn:Disconnect()
+            end
         end
     end
-end
+end)
 
 
 
