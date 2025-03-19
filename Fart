@@ -822,51 +822,30 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
     if state then
         getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
-        local Players = game:GetService("Players")
         local debounce = false
-        local hitCount = 0
-        local lastHitTime = 0
-
-        -- بررسی اینکه بازیکن در حال استفاده از Grab یا Telekinesis نباشد
-        local function isGrabbedOrTelekinetic()
-            local localPlayer = Players.LocalPlayer
-            local character = localPlayer.Character
-            if not character then return false end
-
-            -- چک می‌کنیم که بازیکن در وضعیت کنترل‌شده توسط Grab یا Telekinesis نباشد
-            return character:FindFirstChild("Grabbed") or character:FindFirstChild("Telekinesis")
-        end
+        local hitCount = 0 -- شمارنده تعداد ضربات وارد شده
+        local lastHitTime = 0 -- ذخیره زمان آخرین ضربه
 
         local function heavyPunch()
             if debounce or not getgenv().heavyPunchOnly then return end
             debounce = true
 
-            hitCount = hitCount + 1
-            local currentTime = tick()
+            hitCount = hitCount + 1 -- افزایش تعداد ضربات
+            local currentTime = tick() -- دریافت زمان فعلی
 
-            -- اگر بیش از ۱ ثانیه از آخرین ضربه گذشته باشد، شمارنده ریست شود
+            -- تعیین تأخیر بر اساس تعداد ضربات
+            local delayTime = (hitCount % 3 == 0) and 0.2 or 0.5
+
+            -- اطمینان از اینکه Heavy Punch سریع‌تر اجرا می‌شود
             if currentTime - lastHitTime > 1 then
-                hitCount = 1
-            end
-            lastHitTime = currentTime
-
-            -- اگر بازیکن در وضعیت Grab یا Telekinesis بود، ضربه اجرا نشود
-            if isGrabbedOrTelekinetic() then
-                debounce = false
-                return
+                hitCount = 1 -- اگر 1 ثانیه از آخرین ضربه گذشته، شمارنده ریست شود
             end
 
-            -- اجرای اولین Heavy Punch بلافاصله بعد از کلیک
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
+            lastHitTime = currentTime -- ذخیره زمان ضربه
 
-            -- کاهش تاخیر بین دو ضربه به ۰.۰۸ ثانیه (خیلی سریع اجرا بشه)
-            task.wait(0.3)
-
-            -- اجرای دومین Heavy Punch
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 1, 2)
-
-            -- کاهش تأخیر کلیک بعدی (۰.۲۵ تا ۰.۴ ثانیه)
-            task.wait(math.random(250, 400) / 1000)
+            -- اجرای Heavy Punch بعد از تأخیر مشخص
+            task.wait(delayTime)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 1)
 
             debounce = false
         end
