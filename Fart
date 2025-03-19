@@ -818,49 +818,52 @@ SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
         getgenv().rapidMobile = false
     end
 end)
-SSection:NewToggle("F Mode (PvP)", "", function(state)
-    if state then
-        getgenv().heavyPunchOnly = true
-        local UserInputService = game:GetService("UserInputService")
-        local debounce = false
+SSection:NewToggle("Fu Mode (PvP)", "", function(state) if state then getgenv().heavyPunchOnly = true local UserInputService = game:GetService("UserInputService") local debounce = false local hitCount = 0 -- شمارنده تعداد ضربات وارد شده
 
-        local function heavyPunch()
-            if debounce or not getgenv().heavyPunchOnly then return end
-            debounce = true
+local function heavyPunch()
+        if debounce or not getgenv().heavyPunchOnly then return end
+        debounce = true
 
-            -- اجرای Heavy Punch بعد از تأخیر مشخص
-            task.wait(0.5) -- مقدار تأخیر همیشه ۰.۵ ثانیه
+        hitCount = hitCount + 1 -- افزایش تعداد ضربات
 
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.5, 2)
+        -- تعیین تأخیر بر اساس تعداد ضربات
+        local delayTime = (hitCount % 3 == 0) and 0.4 or 0.8
 
-            debounce = false
-        end
+        -- اجرای Heavy Punch بعد از تأخیر مشخص
+        task.wait(delayTime)
+        game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.6, 2)
 
-        -- اجرای کد روی ماوس و موبایل
-        local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-            if gameProcessed then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                heavyPunch()
-            end
-        end)
+        -- اگر اسپم متوقف شد، شمارنده ریست شود
+        task.wait(1)
+        hitCount = 0
 
-        local touchConnection = UserInputService.TouchTap:Connect(function()
+        debounce = false
+    end
+
+    -- اجرای کد روی ماوس و موبایل
+    local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             heavyPunch()
-        end)
+        end
+    end)
 
-        -- ذخیره اتصالات برای غیرفعال‌سازی
-        getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
-    else
-        getgenv().heavyPunchOnly = false
+    local touchConnection = UserInputService.TouchTap:Connect(function()
+        heavyPunch()
+    end)
 
-        -- قطع کردن رویدادها وقتی غیرفعال می‌شود
-        if getgenv().heavyPunchConnections then
-            for _, conn in pairs(getgenv().heavyPunchConnections) do
-                conn:Disconnect()
-            end
+    -- ذخیره اتصالات برای غیرفعال‌سازی
+    getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
+else
+    getgenv().heavyPunchOnly = false
+
+    -- قطع کردن رویدادها وقتی غیرفعال می‌شود
+    if getgenv().heavyPunchConnections then
+        for _, conn in pairs(getgenv().heavyPunchConnections) do
+            conn:Disconnect()
         end
     end
-end)
+end
 
 
 
