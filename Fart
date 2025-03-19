@@ -845,7 +845,7 @@ SSection:NewToggle("F Mode (PvP)", "", function(state)
 
             -- اجرای Heavy Punch بعد از تأخیر مشخص
             task.wait(delayTime)
-            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.4, 1)
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.4, 2)
 
             debounce = false
         end
