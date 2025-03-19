@@ -836,16 +836,23 @@ SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
             -- تعیین تأخیر بر اساس تعداد ضربات
             local delayTime = (hitCount % 3 == 0) and 0.2 or 0.5
 
-            -- اطمینان از اینکه Heavy Punch سریع‌تر اجرا می‌شود
+            -- اگر ۱ ثانیه از آخرین ضربه گذشته باشد، شمارنده ریست شود
             if currentTime - lastHitTime > 1 then
-                hitCount = 1 -- اگر 1 ثانیه از آخرین ضربه گذشته، شمارنده ریست شود
+                hitCount = 1
             end
-
             lastHitTime = currentTime -- ذخیره زمان ضربه
 
-            -- اجرای Heavy Punch بعد از تأخیر مشخص
-            task.wait(delayTime)
+            -- اجرای اولین Heavy Punch
             game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 1, 2)
+
+            -- تأخیر کوتاه بین دو Heavy Punch
+            task.wait(0.15)
+
+            -- اجرای دومین Heavy Punch
+            game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 1, 2)
+
+            -- تأخیر برای کلیک بعدی (۰.۳ تا ۰.۵ ثانیه برای طبیعی ماندن)
+            task.wait(math.random(300, 500) / 1000)
 
             debounce = false
         end
