@@ -841,36 +841,48 @@ SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
         end
     end
 end)
-SSection:NewToggle("Rapid Punch f (PvP)", "", function(state)
+SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
     if state then
-        getgenv().doublePunch = true
+        getgenv().heavyPunchOnly = true
+        local UserInputService = game:GetService("UserInputService")
         local debounce = false
 
-        local function singlePunch()
-            if debounce or not getgenv().doublePunch then return end
+        local function delayedHeavyPunch()
+            if debounce or not getgenv().heavyPunchOnly then return end
             debounce = true
 
-            spawn(function()
-                for _ = 1, 1 do -- اجرای ۸ ضربه به جای ۱۰ برای بهبود عملکرد
-                    game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 2)
-                    task.wait(0.5) -- تاخیر ۵۰ میلی‌ثانیه برای کنترل بهتر
-                end
+            -- اجرای ضربه سنگین با تأخیر 0.5 ثانیه
+            task.delay(0.5, function()
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.6, 2)
+                debounce = false -- آماده برای کلیک بعدی
             end)
-
-            task.wait(0.5) -- تاخیر نهایی بین کلیک‌ها
-            debounce = false
         end
 
-        -- اجرای ضربه هنگام کلیک ماوس
-        game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+        -- اتصال برای کلیک ماوس (PC)
+        local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                singlePunch()
+                delayedHeavyPunch()
             end
         end)
 
+        -- اتصال برای لمس (موبایل)
+        local touchConnection = UserInputService.TouchTap:Connect(function()
+            delayedHeavyPunch()
+        end)
+
+        -- ذخیره اتصالات برای قطع کردن بعدی
+        getgenv().heavyPunchConnections = {mouseConnection, touchConnection}
     else
-        getgenv().doublePunch = false
+        getgenv().heavyPunchOnly = false
+
+        -- قطع کردن اتصالات هنگام غیرفعال شدن
+        if getgenv().heavyPunchConnections then
+            for _, conn in pairs(getgenv().heavyPunchConnections) do
+                conn:Disconnect()
+            end
+            getgenv().heavyPunchConnections = nil
+        end
     end
 end)
 
