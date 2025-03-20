@@ -789,36 +789,59 @@ SSection:NewToggle("Spawn Point", "", function(state)
 	end
 end);
 -- ????? Rapid Punch ???? ???????? ?? ??????
-SSection:NewToggle("Rapid Punch (Mobile)", "", function(state)
+SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
     if state then
         getgenv().rapidMobile = true
+        local UserInputService = game:GetService("UserInputService")
         local touchStartTime = 0
-        
-        -- ????? ??? ????
-        game:GetService("UserInputService").TouchStarted:Connect(function(touchInput, gameProcessed)
-            if gameProcessed then return end
-            touchStartTime = os.clock()
-        end)
 
-        -- ????? ????? ???
-        game:GetService("UserInputService").TouchEnded:Connect(function(touchInput, gameProcessed)
-            if gameProcessed or not rapidMobile then return end
-            
-            -- ???? ??? ????? (???? ????)
-            if os.clock() - touchStartTime < 0.3 then
-                spawn(function()
-                    for _ = 1, 10 do -- ????? ????? ?? ?? ???
-                        game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
-                        task.wait(0.01) -- ????? ??? ?????
-                    end
-                end)
+        -- تابع برای اجرای مشت‌های سریع
+        local function fireRapidPunches()
+            spawn(function()
+                for _ = 1, 30 do -- تعداد مشت‌ها (قابل تنظیم)
+                    game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
+                    task.wait(0.01) -- تأخیر بین مشت‌ها
+                end
+            end)
+        end
+
+        -- مدیریت کلیک ماوس برای PC
+        local mouseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if not getgenv().rapidMobile or gameProcessed then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                fireRapidPunches()
             end
         end)
+
+        -- مدیریت ورودی لمسی برای موبایل
+        local touchConnectionStart = UserInputService.TouchStarted:Connect(function(touchInput, gameProcessed)
+            if not getgenv().rapidMobile or gameProcessed then return end
+            touchStartTime = os.clock() -- زمان شروع لمس
+        end)
+
+        local touchConnectionEnd = UserInputService.TouchEnded:Connect(function(touchInput, gameProcessed)
+            if not getgenv().rapidMobile or gameProcessed then return end
+            -- فقط اگر لمس کوتاه باشد (مثلاً ضربه سریع)
+            if os.clock() - touchStartTime < 0.3 then
+                fireRapidPunches()
+            end
+        end)
+
+        -- ذخیره اتصالات برای قطع کردن هنگام غیرفعال‌سازی
+        getgenv().rapidMobileConnections = {mouseConnection, touchConnectionStart, touchConnectionEnd}
     else
         getgenv().rapidMobile = false
+
+        -- قطع کردن تمام اتصالات ورودی
+        if getgenv().rapidMobileConnections then
+            for _, conn in pairs(getgenv().rapidMobileConnections) do
+                conn:Disconnect()
+            end
+            getgenv().rapidMobileConnections = nil
+        end
     end
 end)
-SSection:NewToggle("Fu Mode (PvP)", "", function(state)
+SSection:NewToggle("Fuck Mode (PvP)", "", function(state)
     if state then
         getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
