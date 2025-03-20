@@ -798,7 +798,7 @@ SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
         -- تابع برای اجرای مشت‌های سریع
         local function fireRapidPunches()
             spawn(function()
-                for _ = 1, 30 do -- تعداد مشت‌ها (قابل تنظیم)
+                for _ = 1, 60 do -- تعداد مشت‌ها (قابل تنظیم)
                     game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
                     task.wait(0.01) -- تأخیر بین مشت‌ها
                 end
