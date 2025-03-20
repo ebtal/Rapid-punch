@@ -841,7 +841,7 @@ SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
         end
     end
 end)
-SSection:NewToggle("Rapid Punch (PvP)", "", function(state)
+SSection:NewToggle("Rapid Punch f (PvP)", "", function(state)
     if state then
         getgenv().doublePunch = true
         local debounce = false
@@ -852,7 +852,7 @@ SSection:NewToggle("Rapid Punch (PvP)", "", function(state)
 
             spawn(function()
                 for _ = 1, 1 do -- اجرای ۸ ضربه به جای ۱۰ برای بهبود عملکرد
-                    game:GetService("ReplicatedStorage").Events.Punch:FireServer(1, 0.5, 2)
+                    game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.1, 2)
                     task.wait(0.5) -- تاخیر ۵۰ میلی‌ثانیه برای کنترل بهتر
                 end
             end)
