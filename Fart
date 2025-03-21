@@ -841,7 +841,7 @@ SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
         end
     end
 end)
-SSection:NewToggle("Fuc Mode (PvP)", "", function(state)
+SSection:NewToggle("FucK Mode (PvP)", "", function(state)
     if state then
         getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
@@ -853,7 +853,7 @@ SSection:NewToggle("Fuc Mode (PvP)", "", function(state)
 
             -- اجرای ضربه سنگین با تأخیر 0.5 ثانیه
             task.delay(0.5, function()
-                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.4, 2)
+                game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.4, 1)
                 debounce = false -- آماده برای کلیک بعدی
             end)
         end
