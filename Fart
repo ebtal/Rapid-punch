@@ -841,7 +841,7 @@ SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
         end
     end
 end)
-SSection:NewToggle("Fuc Mode (PvP)", "", function(state)
+SSection:NewToggle("FucK Mode (PvP)", "", function(state)
     if state then
         getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
@@ -1990,40 +1990,40 @@ local MSection = MTab:NewSection("Made By GodAmir");
 local KSection = KTab:NewSection("Made By GodAmir");
 local GSection = GTab:NewSection("Made By GodAmir");
 local UserInputService = game:GetService("UserInputService")
-local gui = Window -- فریم اصلی پنجره
+local TweenService = game:GetService("TweenService")
+local gui = Window -- پنجره اصلی
 
--- پیدا کردن نوار عنوان (همان جایی که "Omni - Man farm" نوشته شده)
-local titleBar
+-- پیدا کردن فریم اصلی پنجره
+local mainFrame
 for _, child in pairs(gui:GetDescendants()) do
-    if child:IsA("TextLabel") and child.Text == "Omni - Man farm" then
-        titleBar = child
+    if child:IsA("Frame") and child.Name == "Main" then
+        mainFrame = child
         break
     end
 end
 
-if titleBar then
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+if mainFrame then
+    local titleBar = mainFrame.Title -- نوار عنوان
+    local dragging = false
+    local dragInput, dragStart, startPos
 
     -- تابع برای حرکت پنجره
     local function update(input)
         local delta = input.Position - dragStart
-        gui.Position = UDim2.new(
-            startPos.X.Scale, 
-            startPos.X.Offset + delta.X, 
-            startPos.Y.Scale, 
+        mainFrame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
             startPos.Y.Offset + delta.Y
         )
     end
 
-    -- رویداد لمس شروع شد
+    -- تشخیص لمس روی نوار عنوان
     titleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = gui.Position
+            startPos = mainFrame.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -2032,14 +2032,14 @@ if titleBar then
         end
     end)
 
-    -- رویداد حرکت انگشت
+    -- حرکت انگشت
     titleBar.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
 
-    -- آپدیت موقعیت در حین حرکت
+    -- آپدیت موقعیت پنجره
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             update(input)
