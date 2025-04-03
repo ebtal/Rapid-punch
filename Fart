@@ -841,7 +841,7 @@ SSection:NewToggle("Supper Ultra Rapid Punch (Mobile & PC)", "", function(state)
         end
     end
 end)
-SSection:NewToggle("FucK Mode (PvP)", "", function(state)
+SSection:NewToggle("Fuc Mode (PvP)", "", function(state)
     if state then
         getgenv().heavyPunchOnly = true
         local UserInputService = game:GetService("UserInputService")
@@ -1989,31 +1989,41 @@ local TSection = TTab:NewSection("Made By GodAmir");
 local MSection = MTab:NewSection("Made By GodAmir");
 local KSection = KTab:NewSection("Made By GodAmir");
 local GSection = GTab:NewSection("Made By GodAmir");
--- افزودن قابلیت Drag برای موبایل
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local dragSpeed = 0.25 -- تنظیم سرعت حرکت پنجره
+local gui = Window -- فریم اصلی پنجره
 
-local function makeDraggable(frame, handle)
+-- پیدا کردن نوار عنوان (همان جایی که "Omni - Man farm" نوشته شده)
+local titleBar
+for _, child in pairs(gui:GetDescendants()) do
+    if child:IsA("TextLabel") and child.Text == "Omni - Man farm" then
+        titleBar = child
+        break
+    end
+end
+
+if titleBar then
     local dragging
     local dragInput
     local dragStart
     local startPos
-    
-    -- تابع برای حرکت نرم پنجره
-    local function updatePosition(input)
+
+    -- تابع برای حرکت پنجره
+    local function update(input)
         local delta = input.Position - dragStart
-        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        local tween = TweenService:Create(frame, TweenInfo.new(dragSpeed), {Position = newPos})
-        tween:Play()
+        gui.Position = UDim2.new(
+            startPos.X.Scale, 
+            startPos.X.Offset + delta.X, 
+            startPos.Y.Scale, 
+            startPos.Y.Offset + delta.Y
+        )
     end
-    
-    -- مدیریت رویدادهای لمسی
-    handle.InputBegan:Connect(function(input)
+
+    -- رویداد لمس شروع شد
+    titleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = frame.Position
+            startPos = gui.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -2021,24 +2031,18 @@ local function makeDraggable(frame, handle)
             end)
         end
     end)
-    
-    handle.InputChanged:Connect(function(input)
+
+    -- رویداد حرکت انگشت
+    titleBar.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
-    
+
+    -- آپدیت موقعیت در حین حرکت
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
-            updatePosition(input)
+            update(input)
         end
     end)
-end
-
--- اعمال قابلیت Drag روی پنجره اصلی
-for _, v in pairs(Window:GetChildren()) do
-    if v:IsA("Frame") and v.Name == "Main" then
-        makeDraggable(v, v.Title)
-        break
-    end
 end
