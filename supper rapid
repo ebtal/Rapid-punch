@@ -1,7 +1,7 @@
 getgenv().superHeavyRapid = true
 
 local function shrp()
-    for i = 1, 100 do
+    for i = 1, 40 do
         game:GetService("ReplicatedStorage").Events.Punch:FireServer(0.4, 0.01, 1)
     end
 end
